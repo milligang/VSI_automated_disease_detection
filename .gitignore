@@ -1,0 +1,11 @@
+Notebooks/Fractal\ Dimension\ all\ dataset.ipynb
+__pycache__/
+Notebooks/*checkpoints*
+notebooks/.DS_Store
+Data/all_images.npy
+Results/Charlie/*
+Data/all*/NEFI_graphs/*/*.png
+Notebooks/scratch/*
+Figures/*
+Data/junk/*
+Results/Junk/*
