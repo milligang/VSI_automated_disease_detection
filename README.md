@@ -1,4 +1,4 @@
-# STARE_TDA_public
+# VSI_automated_disease_detection
 
  Code for "Statistical and Topological Summaries Aid Disease Detection for Segmented Retinal Vascular Images," by John T. Nardini, Charles W. Pugh, and Helen M. Byrne. Article available at https://arxiv.org/abs/2202.09708
  
