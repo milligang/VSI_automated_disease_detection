@@ -5,13 +5,10 @@ import numpy as np
 
 from my_custom_functions import network_descriptors, geodesic_distancematrix
 
-###########################################################
 # The following code is for finding the edges, nodes, and edge lengths. Comes from Fractal dimension.ipynb.
 
-dataset = "HRF"
-nefi_output_folder = "../Data/HRF_Dataset_1/NEFI_graphs/*/"
-image_folder = "../Data/HRF_Dataset_1/Provided_masks/"
-write_folder = "../Results/HRF_Dataset_1/"
+dataset = "STARE1"
+nefi_output_folder = "../Data/Dataset_1/NEFI_graphs/*/"
 
 file_name = "im"
 nefi_outputs = glob.glob(f"{nefi_output_folder}*.txt")
@@ -20,8 +17,7 @@ nodes = []
 edges = []
 edge_lengths = []
 
-nums = np.arange(1,46)
-mat = np.load("../Data/Diagnoses/image_diagnoses_HRF.npy",allow_pickle=True).item()
+nums = np.array([1,2,3,4,5,44,77,81,82,139,162, 163, 235, 236, 239, 240, 255, 291, 319, 324])
 
 for num in nums:
     
@@ -37,9 +33,3 @@ for num in nums:
     edges.append(edges_tmp)
     nodes.append(nodes_tmp)
     edge_lengths.append(edge_lengths_tmp)
-
-print (edges, nodes, edge_lengths)
-
-###########################################################
-
-geodesic_distancematrix(nodes, edges, edge_lengths)

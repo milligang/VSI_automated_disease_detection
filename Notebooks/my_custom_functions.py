@@ -1,4 +1,5 @@
 import numpy as np
+import networkx as nx
 
 def network_descriptors(graph_in):
     
@@ -46,13 +47,14 @@ def geodesic_distancematrix(nodeList, edgeList, edgeLength):
 	G.add_nodes_from(nodeList)
 
 	for edgeID,edge in enumerate(edgeList):
-		G.add_edge(edge[0],edge[1],weight=edgeLength[edgeID])
+		G.add_edge(edgeList[0],edgeList[1],weight=edgeLength[edgeID])
 
 	# Find the shortest paths between nodes and source, and unpack in distance matrix
-	DistanceDict = dict(nx.single_source_dijkstra_path_length(G,weight='weight'))
+	DistanceDict = dict(nx.single_source_dijkstra_path_length(G, 0))
 	DM = np.ones((Nnodes,Nnodes))*-1
 	for i in range(Nnodes):
 		for j in range(Nnodes):
 			DM[i,j] = DistanceDict[i][j]
 			
 	return DM
+
