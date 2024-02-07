@@ -8,13 +8,10 @@ from my_custom_functions import geodesic_distancematrix
 
 '''
 Current Progress:
-1) need to make sure that network_descriptors returns the lengths of the edges and not the average
-2) should we only be inputting one graph- this will make (1) simpler
-3) write inputs to geodesic function
-4) not sure how to input central node - may have to edite geodesic to take another input
+1) central node issue: given a list of nodes, which is the central node?
+2) what is graph_in for the weighted graph function?
 '''
 
-'''
 # network x graph for edge length calculations
 dataset = "STARE1"
 nefi_output_folder = "../Data/Dataset_1/NEFI_graphs/*/"
@@ -41,14 +38,17 @@ for num in nums:
     edges_tmp, nodes_tmp, edge_lengths_tmp = network_descriptors(xgraph_in)
     edges.append(edges_tmp)
     nodes.append(nodes_tmp)
+    # edge_lengths is a list of float lists, one float list per graph
     edge_lengths.append(edge_lengths_tmp)
 
+graph_path = '../Data/Dataset_1/NEFI_graphs/webs_im0077_#0_12h03m01s/Graph Filtering_smooth_2_nodes_im0077.png'
 
-# functions for nodes and edges
+# function for nodes
 weighted_graph = Graph_to_weighted(graph_in)
 nodesList = get_nodes(weighted_graph)
+
+"central node is the coords of the central node, but we want the central node's number in the list of nodes"
 central_node = central_node_ID(weighted_graph)
 
 # call geodesic function
-geodesic_distancematrix(nodesList)
-'''
+# geodesic_distancematrix(nodesList, edges, edge_lengths, central_node)

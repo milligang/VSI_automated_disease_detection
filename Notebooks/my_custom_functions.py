@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 
-def network_descriptors(graph_in):
+def my_network_descriptors(graph_in):
     
     '''
     extract edges, nodes, and average edge length (pixels) from graph
@@ -14,7 +14,7 @@ def network_descriptors(graph_in):
     
     edges:         number of edges
     nodes:         number of nodes
-    edge_lengths:  averaged length of each edge
+    edge_lengths:  length of each edge
     
     '''
     
@@ -32,12 +32,10 @@ def network_descriptors(graph_in):
 
         #determine weight via Euclidean distance
         edge_length_tmp.append(np.linalg.norm((node1[0] - node2[0],node1[1] - node2[1])))
-
-    edge_lengths = np.mean(edge_length_tmp)
     
-    return edges, nodes, edge_lengths
+    return edges, nodes, edge_length_tmp
 
-def geodesic_distancematrix(nodeList, edgeList, edgeLength):
+def geodesic_distancematrix(nodeList, edgeList, edgeLength, centralNode):
 	""" Construct a geodesic distance matrix using dijstra shortest paths """
 	
 	Nnodes = len(nodeList)
@@ -50,7 +48,7 @@ def geodesic_distancematrix(nodeList, edgeList, edgeLength):
 		G.add_edge(edgeList[0],edgeList[1],weight=edgeLength[edgeID])
 
 	# Find the shortest paths between nodes and source, and unpack in distance matrix
-	DistanceDict = dict(nx.single_source_dijkstra_path_length(G, 0))
+	DistanceDict = dict(nx.single_source_dijkstra_path_length(G, centralNode))
 	DM = np.ones((Nnodes,Nnodes))*-1
 	for i in range(Nnodes):
 		for j in range(Nnodes):

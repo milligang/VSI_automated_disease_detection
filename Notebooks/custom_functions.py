@@ -1,4 +1,4 @@
-import cv2, pdb, copy
+
 import networkx as nx
 import numpy as np
 #import thinning
@@ -9,12 +9,8 @@ from itertools import chain
 from scipy.stats import multivariate_normal
 import json
 import networkx as nx
-import matplotlib.pyplot as plt
 import sys
-import matplotlib.image as mpimg
-from persim import plot_diagrams
 import gudhi as gd
-import pylab as pl
 
 from sklearn import svm
 from sklearn.model_selection import cross_val_score, KFold
