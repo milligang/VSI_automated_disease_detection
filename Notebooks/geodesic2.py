@@ -41,64 +41,42 @@ for num in nums:
     edge_lengths.append(edge_lengths_tmp)
 
 graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0077.txt'
-def process_graph_from_file(file_path):
-    """
-    Read data from a file, construct a NetworkX graph, and populate it with nodes and edges with attributes.
-    """
+
+# read data and create list of all the edges. each edge is represented by a tuple of head and tail coords.
+def read_graph_data(file_path):
     graph_in = nx.Graph()
 
-    try:
-        with open(file_path, 'r') as file:
-            node_buffer = None  # Buffer to store the current node while processing edges
-            for line in file:
-                line = line.strip()
-                if line.startswith('#'):
-                    continue
-                parts = line.split('|')
-                coordinates = tuple(map(int, parts[0].strip('()').split(',')))
-                attributes_str = parts[1].strip()
-                if attributes_str:
-                    # Parse attributes to extract edge information
-                    attributes = eval(attributes_str)
-                    for node, edge_attr in attributes.items():
-                        if node != 'pixels':  # Exclude 'pixels' from edge attributes
-                            node_coord = tuple(map(int, node.strip('()').split(',')))
-                            graph_in.add_edge(coordinates, node_coord, **edge_attr)
-                else:
-                    # If the line contains an integer, it represents a node with outgoing edges
-                    num_outgoing_edges = int(line)
-                    node_buffer = coordinates  # Store the current node
-                    # Process outgoing edges for this node based on the integer value
-                    for _ in range(num_outgoing_edges):
-                        # Read the next line to get edge information
-                        next_line = next(file).strip()
-                        if next_line.startswith('{'):
-                            # If the next line contains a dictionary, it represents an edge
-                            edge_attributes = eval(next_line)
-                            for node, edge_attr in edge_attributes.items():
-                                if node != 'pixels':
-                                    node_coord = tuple(map(int, node.strip('()').split(',')))
-                                    graph_in.add_edge(node_buffer, node_coord, **edge_attr)
-                        else:
-                            # If the next line contains an integer, it represents another node
-                            # We need to process it in the next iteration of the loop
-                            node_buffer = tuple(map(int, next_line.strip('()').split(',')))
-    except FileNotFoundError:
-        print(f"File '{file_path}' not found.")
-    except Exception as e:
-        print(f"Error processing file: {e}")
+    with open(file_path, 'r') as file:
+        for line in file:
+            # Skip comment lines
+            if line.startswith('#'):
+                continue
+            
+            # Split the line into coordinates and attributes
+            parts = line.strip().split('|')
+            coordinates = tuple(map(int, parts[0].strip('()').split(',')))
+            attributes = eval(parts[1])  # Safely evaluate the attributes part
+
+            # Add the node to the graph
+            graph_in.add_node(str(coordinates))
+
+            # If the node has edges, add them to the graph
+            if isinstance(attributes, int) and attributes > 0:
+                for _ in range(attributes):
+                    # Create an edge between the current node and a new node
+                    graph_in.add_node(str((0, 0)))  # Dummy node
+                    graph_in.add_edge(str(coordinates), str((0, 0)))
 
     return graph_in
 
 
-graph_in = process_graph_from_file(graph_path)
-
+graph_in = read_graph_data(graph_path)
 # function for nodes
 weighted_graph = Graph_to_weighted(graph_in)
 nodesList = get_nodes(weighted_graph)
 
-"central node is the coords of the central node, but we want the central node's number in the list of nodes"
-#central_node = central_node_ID(weighted_graph)
+# central node returns the coordinates of the central node (not what we use as input in geodesic)
+central_node = central_node_ID(weighted_graph)
 
 # call geodesic function
 #geodesic_distancematrix(nodesList, edges, edge_lengths, central_node)
