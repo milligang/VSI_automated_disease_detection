@@ -42,7 +42,8 @@ for num in nums:
 
 graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0077.txt'
 
-# read data and create list of all the edges. each edge is represented by a tuple of head and tail coords.
+# read data, returning edges and nodes
+'''
 def read_graph_data(file_path):
     graph_in = nx.Graph()
 
@@ -68,15 +69,44 @@ def read_graph_data(file_path):
                     graph_in.add_edge(str(coordinates), str((0, 0)))
 
     return graph_in
+'''
+def read_graph_data(file_path):
+    graph_in = nx.Graph()
 
+    with open(file_path, 'r') as file:
+        for line in file:
+            # Skip comment lines
+            if line.startswith('#'):
+                continue
+            
+            # Split the line into coordinates and attributes
+            parts = line.strip().split('|')
+            head_coordinates = tuple(map(int, parts[0].strip('()').split(',')))
+            attributes = eval(parts[1])  # Safely evaluate the attributes part
 
+            # Add the head node to the graph
+            head_node = str(head_coordinates)
+            graph_in.add_node(head_node)
+
+            # If the head node has edges, add them to the graph
+            if isinstance(attributes, int) and attributes > 0:
+                for _ in range(attributes):
+                    # Split the line to get the coordinates of the tail node
+                    tail_coordinates = tuple(map(int, file.readline().strip().split('|')[0].strip('()').split(',')))
+                    tail_node = str(tail_coordinates)
+                    graph_in.add_node(tail_node)  # Add the tail node to the graph
+                    graph_in.add_edge(head_node, tail_node)  # Add the edge between head and tail nodes
+
+    return graph_in
 graph_in = read_graph_data(graph_path)
+
 # function for nodes
 weighted_graph = Graph_to_weighted(graph_in)
 nodesList = get_nodes(weighted_graph)
 
 # central node returns the coordinates of the central node (not what we use as input in geodesic)
 central_node = central_node_ID(weighted_graph)
+print(central_node)
 
 # call geodesic function
 #geodesic_distancematrix(nodesList, edges, edge_lengths, central_node)
