@@ -7,8 +7,10 @@ from custom_functions import *
 from my_custom_functions import geodesic_distancematrix
 
 '''
-Current Progress:
-1) central node issue: given a list of nodes, which is the central node?
+Tasks:
+graph_in works for a single graph- now want to run it for all the graphs in the list
+get geodesic distance function to work --> need to check/fix: edges, edge_lengths, central_node
+for num in nums is not returning what I am looking for
 '''
 
 # network x graph for edge length calculations
@@ -22,7 +24,9 @@ nodes = []
 edges = []
 edge_lengths = []
  
-nums = np.array([1,2,3,4,5,44,77,81,82,139,162, 163, 235, 236, 239, 240, 255, 291, 319, 324])
+# currently only working with graph 77
+#nums = np.array([1,2,3,4,5,44,77,81,82,139,162, 163, 235, 236, 239, 240, 255, 291, 319, 324])
+nums = np.array([77])
 
 for num in nums:
     
@@ -40,36 +44,10 @@ for num in nums:
     # edge_lengths is a list of float lists, one float list per graph
     edge_lengths.append(edge_lengths_tmp)
 
+# path to the unweighted graph I want to use as graph_in
 graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0077.txt'
 
 # read data, returning edges and nodes
-'''
-def read_graph_data(file_path):
-    graph_in = nx.Graph()
-
-    with open(file_path, 'r') as file:
-        for line in file:
-            # Skip comment lines
-            if line.startswith('#'):
-                continue
-            
-            # Split the line into coordinates and attributes
-            parts = line.strip().split('|')
-            coordinates = tuple(map(int, parts[0].strip('()').split(',')))
-            attributes = eval(parts[1])  # Safely evaluate the attributes part
-
-            # Add the node to the graph
-            graph_in.add_node(str(coordinates))
-
-            # If the node has edges, add them to the graph
-            if isinstance(attributes, int) and attributes > 0:
-                for _ in range(attributes):
-                    # Create an edge between the current node and a new node
-                    graph_in.add_node(str((0, 0)))  # Dummy node
-                    graph_in.add_edge(str(coordinates), str((0, 0)))
-
-    return graph_in
-'''
 def read_graph_data(file_path):
     graph_in = nx.Graph()
 
@@ -102,11 +80,13 @@ graph_in = read_graph_data(graph_path)
 
 # function for nodes
 weighted_graph = Graph_to_weighted(graph_in)
-nodesList = get_nodes(weighted_graph)
+nodeList = get_nodes(weighted_graph)
 
-# central node returns the coordinates of the central node (not what we use as input in geodesic)
+# edit nodeList so it is compatible with geodesic functions
+nodeList_tuples = [tuple(node) for node in nodeList]
+
+# central node returns the coordinates of the central node 
 central_node = central_node_ID(weighted_graph)
-print(central_node)
 
 # call geodesic function
-#geodesic_distancematrix(nodesList, edges, edge_lengths, central_node)
+geodesic_distancematrix(nodeList_tuples, edges, edge_lengths, central_node)

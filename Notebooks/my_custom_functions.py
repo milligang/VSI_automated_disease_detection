@@ -36,9 +36,18 @@ def my_network_descriptors(graph_in):
     return edges, nodes, edge_length_tmp
 
 def geodesic_distancematrix(nodeList, edgeList, edgeLength, centralNode):
-	""" Construct a geodesic distance matrix using dijstra shortest paths """
+	""" 
+	Construct a geodesic distance matrix using dijstra shortest paths 
 	
-	Nnodes = len(nodeList)
+	inputs
+	
+	nodeList: list of tuples of the nodes
+	edgeList: the edges 
+	edgeLength: list of length of each edge
+	centralNode: coordinates of the central node
+	"""
+	
+	Nnodes = len(nodeList) # the number of nodes
 	
 	# Create the graph structure required for networkx
 	G = nx.Graph()
