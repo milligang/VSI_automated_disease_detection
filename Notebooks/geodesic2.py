@@ -14,7 +14,7 @@ graph_in works for a single graph- now want to run it for all the graphs in the 
 get geodesic distance function to work --> need to check/fix: edges, edge_lengths, central_node
 for num in nums is not returning what I am looking for
 '''
-'''
+
 # network x graph for edge length calculations
 dataset = "STARE1"
 nefi_output_folder = "../Data/Dataset_1/NEFI_graphs_VK/*/"
@@ -74,37 +74,7 @@ for edgeID,edge in enumerate(edge_list_ints):
 
 dict = {i: array for i, array in enumerate(node_list)}
 # create plot
-# print(np.min(np.array(edge_list_ints)))
-print(node_list_tuples)
-nx.draw(G, dict)
-plt.show()
-plt.draw(G)
-'''
-# return the primes in [2, n]
-def primes_up_to(n):
-    # n should be >= 2
-    if n < 2:
-        return "error: n < 2"
-    sieve_list = list(range(2, n+1))
-    for i in sieve_list:
-        if i == 0:
-            continue
-        j = 2
-        while (i*j-2) < len(sieve_list): # subtract 2 because the first number in primes_list = 2, and index starts at 0
-            sieve_list[i*j-2] = 0
-            j += 1
-    return sieve_list
-
-# return the number of primes <= n
-def pi(n):
-    primes_count = 0
-    sieves_list = primes_up_to(n)
-    for i in sieves_list:
-        if i != 0:
-            primes_count += 1
-    return primes_count
-
-x = np.arange(2, 20000, 1)
-plt.plot(x, [pi(xi) for xi in x], 'b', label="pi(n)")
-plt.plot(x, [xi/math.log(xi) for xi in x], 'r', label="n/log(n)")
-plt.show()
+pos = nx.spring_layout(graph_in)  # Define positions of nodes
+nx.draw(graph_in, pos, with_labels=False, node_size=20, node_color='skyblue')  # Draw the graph
+plt.title('Graph Visualization')  # Set the title of the plot
+plt.show()  # Show the plot
