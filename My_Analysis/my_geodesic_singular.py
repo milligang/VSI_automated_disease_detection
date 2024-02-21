@@ -54,9 +54,53 @@ graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Fi
 
 nxgraph = read_graph(graph_path)
 
-pos = nx.spring_layout(nxgraph)  # Define positions of nodes
-nx.draw(nxgraph, pos, with_labels=False, node_size=20, node_color='skyblue')  # Draw the graph
-plt.title('Graph Visualization')  # Set the title of the plot
-plt.show()  # Show the plot
+# ----- calculate the central node -----
+def my_central_node_ID(graph_in):
+    central = nx.betweenness_centrality(graph_in,weight="weight")
+    #determine which node is the central node
+    cent_max = 0
+    
+    #determine max centrality
+    for x in central:
+        if central[x] > cent_max:
+            cent_max = central[x]
 
-# ----- calculate the geodesic distance to each node -----
+    #extract which nodes have max centrality
+    central_node_list = []
+    for x in central:
+        if central[x] == cent_max:
+            central_node_list.append(x)
+
+    #In case of multiple most central nodes -- we pick left-most
+    central_node = central_node_list[0]
+    for x in central_node_list:
+        if x < central_node:
+            central_node = x
+
+    return central_node
+
+central_node = my_central_node_ID(nxgraph) # this output matches the central node in geodesic2.py code (which uses coordinates)
+
+'''
+def geodesic_distancematrix(nodeList, edgeList, edgeLength, centralNode):
+	""" 
+	Construct a geodesic distance matrix using dijstra shortest paths 
+	
+	inputs
+	
+	nodeList: list of tuples of the nodes
+	edgeList: the edges 
+	edgeLength: list of length of each edge
+	centralNode: coordinates of the central node
+	"""
+	Nnodes = len(nodeList) # the number of nodes
+	# Create the graph structure required for networkx
+	G = nx.Graph()
+	G.add_nodes_from(nodeList)
+	for edgeID,edge in enumerate(edgeList):
+		G.add_edge(edgeList[0],edgeList[1],weight=edgeLength[edgeID])
+	# Find the shortest paths between nodes and source
+	shortest_path = nx.single_source_dijkstra_path_length(G, centralNode, cutoff = None, weight='weight')
+
+	return shortest_path
+'''
