@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from operator import itemgetter
 
 # read in data as a networkx graph
 def read_graph(graph_path):
@@ -82,3 +83,31 @@ central_node = my_central_node_ID(nxgraph) # this output matches the central nod
 
 # calculate geodesic distances for nxgraph
 geodesic_distance = nx.single_source_dijkstra_path_length(nxgraph, central_node, cutoff=None, weight='weight')
+
+# create functions to make persistence diagram
+# connected_nodes takes in a node and returns a list of all of the nodes connected to it (moving up the branch)
+def connected_nodes(n):
+    tail_nodes = []
+    for (head, tail) in nxgraph.edges:
+        if head == n:
+            tail_nodes.append(tail)
+    return tail_nodes
+'''
+def graph(tuple) = 
+    add tuple to persistence diagram
+
+def compare(tuple_list) = 
+    input format = [(b1, d1); (b2, d2);...]
+    # find the tuple with the highest death value, the 'most persistent'
+    max_tuple = max(tuple_list, key = itemgetter(1))
+    fix: if multiple max_tuple, max is the first one
+    tuple_list.remove(max_tuple)
+    graph(tuple)
+
+def branches(n) =
+    connected_nodes = connected_nodes(n)
+    persistence_values = [(geodesic_distance[n], 0)]
+    for connected_node in connected_nodes:
+            persistence_values.append(branches(connected_node))
+    return compare(persistence_values)
+'''
