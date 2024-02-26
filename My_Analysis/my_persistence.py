@@ -127,13 +127,25 @@ def up_the_branch(n):
     return compare(persistence_values)
 
 # branches(central_node)
-*_, last = geodesic_distance.values()
-print(last)
 '''
+Q: should everything have lifespan of 0 or 1? should the central node be plotted on the graph?
+
 current persistence doesn't work - perhaps use geodesic distance as input for recursion
 persistence diagram starting from end of branch
-max_gd = geodesic_distance[-1]
-list of everything with the highest gd (none of these can be connected anyways), contains gd and lifespan (0 or 1?)
+*_, max_gd = geodesic_distance.values()
+dict = {}
+for n, gd in geodesic_distance.items():
+    if gd == desired gd value (this will change):
+        if not connected to anything:
+            dict[n] = (gd, 0)
+        else (connected to something in the list): 
+            for connection in connections:
+                gd, lifespan = dict[connection]
+                dict[connection] = gd, lifespan + 1
+        alternatively: 
+            do for connection in connections, but include the node as its own connection
+            this will give everything a lifespan >= 1 but then don't have to use an if statement
+dict of everything with the max_gd (none of these can be connected anyways), contains gd and lifespan (0 or 1?) and node
 start adding to this list a list of everything with second highest gd
     if these are not connected to anything, then add to list
     if these are connected to some list of nodes x in the list:
@@ -144,5 +156,6 @@ continue this until gd = 0 -> this is the central node
     but everything should get lifespan added by one if it survived to the end
     the central node should be added to the list? 
 checking if connected:
-    if (node1, node2) in nxgraph.edges or (node2, node1) in nxgraph.edges then connected
+    if (node1, node2) in nxgraph.edges or (node2, node1) in nxgraph.edges then connected 
+    -> want to create list of everything that is connected
 '''
