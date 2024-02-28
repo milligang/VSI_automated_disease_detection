@@ -1,7 +1,11 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import gudhi as gd
+from itertools import combinations
 from operator import itemgetter
+from persim import plot_diagrams
+from gudhi.persistence_graphical_tools import plot_persistence_diagram
 
 # read in data as a networkx graph
 def read_graph(graph_path):
@@ -93,7 +97,8 @@ ax.axis('equal')
 plt.show()
 '''
 
-# create an empty persistence diagram, to be filled with values
+# incorrect persistance diagram method - to fix, perhaps use gd as input for recursion
+'''
 x_coords, y_coords = [], []
 plt.scatter(x_coords, y_coords)
 
@@ -128,10 +133,69 @@ def up_the_branch(n):
 
 # branches(central_node)
 '''
-Q: should everything have lifespan of 0 or 1? should the central node be plotted on the graph?
+def find_connections(n, alive_dict):
+    connected_nodes = []
+    for (head, tail) in nxgraph.edges:
+        if head == n:
+            connected_nodes.append(tail)
+        elif tail == n:
+            connected_nodes.append(head)
+    alive_connections = {}
+    for node in connected_nodes:
+        if node in alive_dict:
+            alive_connections[node] = alive_dict[node]
+    return alive_connections    
+ 
+def compare(connections_dict):
+    temp_tuple = (0, (0, 0))
+    # find oldest node in connect_dict
+    for n, (b, d) in connections_dict.items():
+        if d > temp_tuple[1][0]:
+            temp_tuple = (n, (b, d))
+    oldest_node, (b_o, d_o) = temp_tuple
+    return oldest_node, (b_o, d_o + 1)
 
-current persistence doesn't work - perhaps use geodesic distance as input for recursion
-persistence diagram starting from end of branch
+def transfer(alive_dict, pers_dict):
+    # transfer everything in alive_dict from pers_dict[0] to pers_dict[1]
+    for key, _ in alive_dict.items():
+        if key in pers_dict[0]:
+            pers_dict[1][key] = pers_dict[0].pop(key)
+    return pers_dict
+
+def persistence(gd_dict):
+    pers_dict = [{}, {}]
+    while len(gd_dict) > 1:
+        temp_list = []
+        *_, max_gd = gd_dict.values()
+        for n, gd in gd_dict.items():
+            alive = pers_dict[0]
+            if gd == max_gd:
+                connections = find_connections(n, alive)
+                for connected_node, (_, connected_d) in connections.items():
+                    if connected_d == gd:
+                        del connections[connected_node]
+                        
+                if len(connections) == 0:
+                    alive[n] = (gd, 1)
+                else:
+                    key, value = compare(connections)
+                    alive[key] = value
+                    del connections[key]
+                    pers_dict = transfer(connections, pers_dict)
+                temp_list.append(n)
+        for i in temp_list:
+            if i in gd_dict:
+                del gd_dict[i]
+    return pers_dict
+
+print(persistence(geodesic_distance))
+
+
+                    
+
+            
+    
+'''
 *_, max_gd = geodesic_distance.values()
 dict = {}
 for n, gd in geodesic_distance.items():
@@ -159,3 +223,4 @@ checking if connected:
     if (node1, node2) in nxgraph.edges or (node2, node1) in nxgraph.edges then connected 
     -> want to create list of everything that is connected
 '''
+
