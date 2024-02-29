@@ -90,9 +90,9 @@ geodesic_distance = nx.single_source_dijkstra_path_length(nxgraph, central_node,
 
 # draw nxgraph
 pos = nx.get_node_attributes(nxgraph, 'pos')
-'''
-fig, ax = plt.subplots()
-nx.draw(nxgraph, pos, with_labels = False, node_size = 10)
+
+'''fig, ax = plt.subplots()
+nx.draw(nxgraph, pos, with_labels = True, node_size = 10)
 ax.axis('equal')
 plt.show()
 '''
@@ -150,7 +150,7 @@ def compare(connections_dict):
     temp_tuple = (0, (0, 0))
     # find oldest node in connect_dict
     for n, (b, d) in connections_dict.items():
-        if d > temp_tuple[1][0]:
+        if d > temp_tuple[1][1]:
             temp_tuple = (n, (b, d))
     oldest_node, (b_o, d_o) = temp_tuple
     return oldest_node, (b_o, d_o + 1)
@@ -185,36 +185,6 @@ def persistence(gd_dict):
             if i in gd_dict:
                 del gd_dict[i]
     return pers_dict
-
-print(len(persistence(geodesic_distance)[1]))
-
-    
-'''
-*_, max_gd = geodesic_distance.values()
-dict = {}
-for n, gd in geodesic_distance.items():
-    if gd == desired gd value (this will change):
-        if not connected to anything:
-            dict[n] = (gd, 0)
-        else (connected to something in the list): 
-            for connection in connections:
-                gd, lifespan = dict[connection]
-                dict[connection] = gd, lifespan + 1
-        alternatively: 
-            do for connection in connections, but include the node as its own connection
-            this will give everything a lifespan >= 1 but then don't have to use an if statement
-dict of everything with the max_gd (none of these can be connected anyways), contains gd and lifespan (0 or 1?) and node
-start adding to this list a list of everything with second highest gd
-    if these are not connected to anything, then add to list
-    if these are connected to some list of nodes x in the list:
-        increase lifespan of every node in x by one
-        (do not add this node to the list)
-continue this until gd = 0 -> this is the central node
-    everything DIES, aka stop running the function
-    but everything should get lifespan added by one if it survived to the end
-    the central node should be added to the list? 
-checking if connected:
-    if (node1, node2) in nxgraph.edges or (node2, node1) in nxgraph.edges then connected 
-    -> want to create list of everything that is connected
-'''
+# error: has 143: 34, 36
+# works for simple test graph
 
