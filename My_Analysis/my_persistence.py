@@ -171,15 +171,13 @@ def persistence(gd_dict):
             alive = pers_dict[0]
             if gd == max_gd:
                 connections = find_connections(n, alive)
-                for connected_node, (_, connected_d) in connections.items():
-                    if connected_d == gd:
-                        del connections[connected_node]
-                        
+                connections = {key:(b, d) for key, (b, d) in connections.items() if b != gd}
                 if len(connections) == 0:
                     alive[n] = (gd, 1)
                 else:
                     key, value = compare(connections)
-                    alive[key] = value
+                    del alive[key]
+                    alive[n] = value
                     del connections[key]
                     pers_dict = transfer(connections, pers_dict)
                 temp_list.append(n)
@@ -188,12 +186,8 @@ def persistence(gd_dict):
                 del gd_dict[i]
     return pers_dict
 
-print(persistence(geodesic_distance))
+print(len(persistence(geodesic_distance)[1]))
 
-
-                    
-
-            
     
 '''
 *_, max_gd = geodesic_distance.values()
