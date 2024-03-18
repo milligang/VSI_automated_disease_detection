@@ -50,7 +50,7 @@ def read_graph(graph_path):
 
 def plot_graph(nxgraph):
     pos = nx.get_node_attributes(nxgraph, 'pos')
+    print(pos)
     fig, ax = plt.subplots()
     nx.draw(nxgraph, pos, with_labels = True, node_size = 10)
-    ax.axis('equal')
     plt.show()

@@ -16,10 +16,11 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 
 # path to the data from the graph to be read in
 graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0077.txt'
+test_graph_path = 'testing_graph.txt'
 nxgraph = read_graph(graph_path)
 
 # remove # to plot graph
-# plot_graph(nxgraph)
+#plot_graph(nxgraph)
 
 # calculate the central node
 def my_central_node_ID(graph_in):
@@ -82,10 +83,10 @@ def transfer(alive_dict, pers_dict):
     return pers_dict
 
 def persistence(gd_dict):
-    pers_dict = [{}, {}]
+    pers_dict = {0: {}, 1: {}}
     while len(gd_dict) > 1:
         temp_list = []
-        *_, max_gd = gd_dict.values()
+        max_gd = max(gd_dict.values()) 
         for n, gd in gd_dict.items():
             alive = pers_dict[0]
             if gd == max_gd:
@@ -103,14 +104,13 @@ def persistence(gd_dict):
         for i in temp_list:
             if i in gd_dict:
                 del gd_dict[i]
+    pers_dict[0][central_node] = (0, float('inf'))
+    print(pers_dict)
     return pers_dict
-# error: has 143: 34, 36
-# works for simple test graph
 
 # graph persistence diagram
-
 def graph_pers(pers_dict):
-    data = np.array(list(pers_dict[1].values()))
+    data = np.array(list(pers_dict[1].values()) + list(pers_dict[0].values()))
     dgms = ripser(data)['dgms']
     plot_diagrams(dgms, show=True)
 
