@@ -1,18 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-import os
-from ripser import ripser
 import numpy as np
-import gudhi as gd
-from itertools import combinations
-from operator import itemgetter
 from persim import plot_diagrams
-from gudhi.persistence_graphical_tools import plot_persistence_diagram
 from my_read_graph import *
-from sklearn import datasets
-import matplotlib
-from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
-                               AutoMinorLocator, LogLocator)
 
 # path to the data from the graph to be read in
 graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0077.txt'
@@ -44,13 +34,14 @@ def my_central_node_ID(graph_in):
 
     return central_node
 
-central_node = my_central_node_ID(nxgraph) # this output matches the central node in geodesic2.py code (which uses coordinates)
-
 # calculate geodesic distances for nxgraph
-geodesic_distance = nx.single_source_dijkstra_path_length(nxgraph, central_node, cutoff=None, weight='length')
+def geodesic_distance(graph_in):
+    central_node = my_central_node_ID(graph_in)
+    geodesic_distance = nx.single_source_dijkstra_path_length(graph_in, central_node, cutoff=None, weight='length')
+    return geodesic_distance
 
 # create persistence diagram
-def find_connections(n, alive_dict):
+def find_connections(n, alive_dict, graph_in):
     connected_nodes = []
     for (head, tail) in nxgraph.edges:
         if head == n:
@@ -80,7 +71,8 @@ def transfer(alive_dict, pers_dict, gd):
             pers_dict[1][key] = pers_dict[0].pop(key)
     return pers_dict
 
-def persistence(gd_dict):
+def persistence(graph_in):
+    gd_dict = geodesic_distance(graph_in)
     pers_dict = {0: {}, 1: {}}
     while len(gd_dict) > 1:
         temp_list = []
@@ -88,7 +80,7 @@ def persistence(gd_dict):
         for n, gd in gd_dict.items():
             alive = pers_dict[0]
             if gd == max_gd:
-                connections = find_connections(n, alive)
+                connections = find_connections(n, alive, graph_in)
                 connections = {key:(b, d) for key, (b, d) in connections.items() if b != gd}
                 if len(connections) == 0:
                     alive[n] = (gd, float('inf'))
@@ -104,22 +96,28 @@ def persistence(gd_dict):
                 del gd_dict[i]
     return pers_dict
 
-# graph persistence diagram
-def graph_pers(pers_dict):
-    data = np.array(list(pers_dict[1].values()) + list(pers_dict[0].values()))
-    max_gd = data[0][0]
+# return of coordinates for persistence diagram
+def pers_coords(graph_in):
+    pers_dict = persistence(graph_in)
+    points = np.array(list(pers_dict[1].values()) + list(pers_dict[0].values()))
+    max_gd = points[0][0]
     #is there a better way to reverse the axis?
-    for i in range(len(data)):
-        b, d = data[i]
+    for i in range(len(points)):
+        b, d = points[i]
         if d != float('inf'):
-            data[i][0] = abs(b - max_gd)
-            data[i][1] = abs(d - max_gd)
-    return plot_diagrams(data)
+            points[i][0] = abs(b - max_gd)
+            points[i][1] = abs(d - max_gd)
+    return points
 
-plt.figure()
-plt.title("branching network")
-plot_graph(nxgraph)
-plt.figure()
-graph_pers(persistence(geodesic_distance))
-plt.title("persistence diagram")
-plt.show()
+# visualization of a dataset and corresponding persistence diagram
+def single_dataset_graphs(graph_in):
+    gd = geodesic_distance(graph_in)
+    plt.figure()
+    plt.title("branching network")
+    plot_graph(graph_in)
+    plt.figure()
+    plot_diagrams(pers_coords(graph_in))
+    plt.title("persistence diagram")
+    plt.show()
+
+#single_dataset_graphs(nxgraph)
