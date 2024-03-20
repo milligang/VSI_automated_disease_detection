@@ -19,12 +19,9 @@ graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Fi
 test_graph_path = 'testing_graph.txt'
 nxgraph = read_graph(graph_path)
 
-# remove # to plot graph
-#plot_graph(nxgraph)
-
 # calculate the central node
 def my_central_node_ID(graph_in):
-    central = nx.betweenness_centrality(graph_in,weight="weight")
+    central = nx.betweenness_centrality(graph_in,weight="length")
     #determine which node is the central node
     cent_max = 0
     
@@ -50,7 +47,7 @@ def my_central_node_ID(graph_in):
 central_node = my_central_node_ID(nxgraph) # this output matches the central node in geodesic2.py code (which uses coordinates)
 
 # calculate geodesic distances for nxgraph
-geodesic_distance = nx.single_source_dijkstra_path_length(nxgraph, central_node, cutoff=None, weight='weight')
+geodesic_distance = nx.single_source_dijkstra_path_length(nxgraph, central_node, cutoff=None, weight='length')
 
 # create persistence diagram
 def find_connections(n, alive_dict):
@@ -73,12 +70,13 @@ def compare(connections_dict):
         if d > temp_tuple[1][1]:
             temp_tuple = (n, (b, d))
     oldest_node, (b_o, d_o) = temp_tuple
-    return oldest_node, (b_o, d_o + 1)
+    return oldest_node, (b_o, d_o)
 
-def transfer(alive_dict, pers_dict):
+def transfer(alive_dict, pers_dict, gd):
     # transfer everything in alive_dict from pers_dict[0] to pers_dict[1]
     for key, _ in alive_dict.items():
         if key in pers_dict[0]:
+            pers_dict[0][key] = pers_dict[0][key][0], gd
             pers_dict[1][key] = pers_dict[0].pop(key)
     return pers_dict
 
@@ -93,25 +91,35 @@ def persistence(gd_dict):
                 connections = find_connections(n, alive)
                 connections = {key:(b, d) for key, (b, d) in connections.items() if b != gd}
                 if len(connections) == 0:
-                    alive[n] = (gd, 1)
+                    alive[n] = (gd, float('inf'))
                 else:
                     key, value = compare(connections)
                     del alive[key]
                     alive[n] = value
                     del connections[key]
-                    pers_dict = transfer(connections, pers_dict)
+                    pers_dict = transfer(connections, pers_dict, gd)
                 temp_list.append(n)
         for i in temp_list:
             if i in gd_dict:
                 del gd_dict[i]
-    pers_dict[0][central_node] = (0, float('inf'))
-    print(pers_dict)
     return pers_dict
 
 # graph persistence diagram
 def graph_pers(pers_dict):
     data = np.array(list(pers_dict[1].values()) + list(pers_dict[0].values()))
-    dgms = ripser(data)['dgms']
-    plot_diagrams(dgms, show=True)
+    max_gd = data[0][0]
+    #is there a better way to reverse the axis?
+    for i in range(len(data)):
+        b, d = data[i]
+        if d != float('inf'):
+            data[i][0] = abs(b - max_gd)
+            data[i][1] = abs(d - max_gd)
+    return plot_diagrams(data)
 
+plt.figure()
+plt.title("branching network")
+plot_graph(nxgraph)
+plt.figure()
 graph_pers(persistence(geodesic_distance))
+plt.title("persistence diagram")
+plt.show()

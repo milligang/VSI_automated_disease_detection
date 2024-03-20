@@ -41,7 +41,8 @@ def read_graph(graph_path):
                             G.add_node(node_labels[tail_node], pos=(tail_coordinates[1],-tail_coordinates[0]))
 
                         # Add the edge between head and tail nodes
-                        G.add_edge(node_labels[head_node], node_labels[tail_node])
+                        edge_length = float((tail_line.split('|')[1].split(':')[2].split(',')[0]))
+                        G.add_edge(node_labels[head_node], node_labels[tail_node], length = edge_length)
     except FileNotFoundError:
         print(f"File not found: {graph_path}")
     except Exception as e:
@@ -50,7 +51,4 @@ def read_graph(graph_path):
 
 def plot_graph(nxgraph):
     pos = nx.get_node_attributes(nxgraph, 'pos')
-    print(pos)
-    fig, ax = plt.subplots()
-    nx.draw(nxgraph, pos, with_labels = True, node_size = 10)
-    plt.show()
+    return nx.draw(nxgraph, pos, with_labels = False, node_size = 10)
