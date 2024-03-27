@@ -5,7 +5,7 @@ from persim import plot_diagrams
 from my_read_graph import *
 
 # path to the data from the graph to be read in
-graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0077_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0077.txt'
+graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0002_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0002.txt'
 test_graph_path = 'testing_graph.txt'
 nxgraph = read_graph(graph_path)
 
@@ -113,11 +113,9 @@ def pers_coords(graph_in):
 def single_dataset_graphs(graph_in):
     gd = geodesic_distance(graph_in)
     plt.figure()
-    plt.title("branching network")
+    plt.title("2 branching network")
     plot_graph(graph_in)
     plt.figure()
     plot_diagrams(pers_coords(graph_in))
-    plt.title("persistence diagram")
+    plt.title("2 persistence diagram")
     plt.show()
-
-#single_dataset_graphs(nxgraph)
