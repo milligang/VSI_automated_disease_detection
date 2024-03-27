@@ -1,7 +1,7 @@
 # compute the bottleneck distance
 from my_persistence import *
 from my_read_graph import *
-from os import walk
+import os
 import json
 from persim import bottleneck
 import matplotlib.pyplot as plt
@@ -10,19 +10,15 @@ import numpy as np
 from matplotlib.ticker import (MultipleLocator, LogLocator, FormatStrFormatter, AutoMinorLocator)
 from sklearn.decomposition import PCA
 
-path1 = ['../Data/Dataset_1/NEFI_graphs_VK/']
+path1 = '../Data/Dataset_1/NEFI_graphs_VK/'
 
-def dataset_1_files(datalist):
-    if datalist[0] != '../Data/Dataset_1/NEFI_graphs_VK/': 
-        print('hmm')  
-        #raise ValueError('wrong dataset') 
-    else:
-        dataset = datalist[0]
+def dataset_1_files(dataset):
+    if os.path.normpath(dataset) == '../Data/Dataset_1/NEFI_graphs_VK':  
         file_nums = [1, 2, 3, 4, 5, 44, 77, 81, 82, 139, 162, 163, 235, 236, 240, 255, 291, 319, 324]
         txt_files = []
         files_order = []
         #note: this doesn't include the files where the txt is the second in the dir, not the first
-        for (root, _, txt_file) in walk(dataset):
+        for (root, _, txt_file) in os.walk(dataset):
             for num in file_nums:
                 num_str = f"{str(num).zfill(4)}"
                 name = f"{'_im'}{num_str}{'.txt'}"
@@ -30,10 +26,11 @@ def dataset_1_files(datalist):
                     files_order.append(num)
                     txt_files.append(f"{root}{'/'}{txt_file[0]}")
         return txt_files, files_order
+    else:
+        raise ValueError('wrong dataset') 
 
 # returns list of persistence coordinates for each dataset
-def dgms(dataset):
-    txt_files = (dataset_1_files(dataset))[0]
+def dgms(txt_files):
     dgms_collection = {}
     for txt_file in txt_files:
         graph_in = read_graph(txt_file)
