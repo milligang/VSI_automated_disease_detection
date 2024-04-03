@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import numpy as np
 
 # read in data as a networkx graph
 def read_graph(graph_path):
@@ -48,6 +49,69 @@ def read_graph(graph_path):
     except Exception as e:
         print(f"Error processing file: {e}")
     return G
+
+
+def obtain_diagnoses(data_set, results_dir, data_type="PI"):
+    '''
+    obtain the disease classifications of each VSI
+    
+    inputs:
+    
+    data_type : "PI" for persistence images
+    
+    outputs:
+    
+        ID : IDs of each VSI
+        data : dictionary containing TDA descriptor vectors for each filtration for each VSI
+        diag : disease classification for each VSI
+    '''
+    if "stare" == data_set:
+        num_images = 402
+        diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses.npy",allow_pickle=True,encoding="latin1").item()
+    elif data_set == "HRF":
+        num_images = 45
+        diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses_HRF.npy",allow_pickle=True,encoding="latin1").item()
+    elif "all" == data_set:
+        num_images = 161
+        diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses_all.npy",allow_pickle=True,encoding="latin1").item()
+            
+    ID = np.zeros((num_images,),dtype=int)
+
+    filtration_type = ['pers']
+        
+    if data_type == "PI":
+        data_format = np.zeros((num_images,2*2500))
+
+        data = {}
+        for key in filtration_type:
+            data[key] = np.copy(data_format)
+
+    nums = list(diagnosis_keys['image_diagnoses'])
+    diag = np.zeros((num_images,4))
+    diag[:] = np.nan
+    no_data_exists = []
+    for i,num in enumerate(nums):
+
+        ID[i] = i+1
+        diagnosis = diagnosis_keys['image_diagnoses'][num]
+
+        for j,d in enumerate(diagnosis):
+            diag[i,j] = d
+
+        try:    
+            for key in filtration_type:                      
+                file_name = (results_dir + "DS1_im" + num + "_" + key + "_PIR.npy")
+                mat = np.load(file_name,encoding="latin1",allow_pickle=True,).item()
+                data[key][i,:] = np.hstack([mat['Ip'][0].reshape(-1),mat['Ip'][1].reshape(-1)])                       
+        except:
+            no_data_exists.append(i)
+
+    ID = np.delete(ID,no_data_exists,axis=0)
+    for key in filtration_type:
+        data[key] = np.delete(data[key],no_data_exists,axis=0)
+    diag = np.delete(diag,no_data_exists,axis=0)
+
+    return ID, data, diag
 
 def plot_graph(nxgraph):
     pos = nx.get_node_attributes(nxgraph, 'pos')

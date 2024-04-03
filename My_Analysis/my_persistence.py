@@ -5,9 +5,9 @@ from persim import plot_diagrams
 from my_read_graph import *
 
 # path to the data from the graph to be read in
-graph_path = '../Data/Dataset_1/NEFI_graphs_VK/webs_im0002_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0002.txt'
-test_graph_path = 'testing_graph.txt'
-nxgraph = read_graph(graph_path)
+# graph_path = '../Data/Dataset_1/NEFI_graphs/webs_im0002_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0002.txt'
+# test_graph_path = 'testing_graph.txt'
+# nxgraph = read_graph(graph_path)
 
 # calculate the central node
 def my_central_node_ID(graph_in):
@@ -43,7 +43,7 @@ def geodesic_distance(graph_in):
 # create persistence diagram
 def find_connections(n, alive_dict, graph_in):
     connected_nodes = []
-    for (head, tail) in nxgraph.edges:
+    for (head, tail) in graph_in.edges:
         if head == n:
             connected_nodes.append(tail)
         elif tail == n:
@@ -111,7 +111,6 @@ def pers_coords(graph_in):
 
 # visualization of a dataset and corresponding persistence diagram
 def single_dataset_graphs(graph_in):
-    gd = geodesic_distance(graph_in)
     plt.figure()
     plt.title("2 branching network")
     plot_graph(graph_in)

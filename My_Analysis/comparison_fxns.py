@@ -3,7 +3,7 @@ from my_read_graph import read_graph
 import numpy as np
 
 # Example NumPy array
-dataset_1 = '../Data/Dataset_1/NEFI_graphs_VK/'
+dataset_1 = '../Data/Dataset_1/NEFI_graphs/'
 txt_files, _  = dataset_1_files(dataset_1)
 
 X_1 = np.load('Dataset_1_output/set1_PCA.npy')
