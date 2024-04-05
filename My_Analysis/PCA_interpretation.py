@@ -8,29 +8,30 @@ from sklearn.decomposition import PCA
 from my_read_graph import *
 
 ### Dataset_1 STARE Expert 1
+'''
 data_set = "stare"
 image_dir = "../Data/Dataset_1/Provided_masks/"
 results_dir = "/My_Results/Dataset_1_output/"
+'''
 
 ### Dataset_1_VK STARE Expert 2
-'''data_set = "stare"
+data_set = "stare"
 image_dir = "../Data/Dataset_1/Provided_masks_VK/"
-results_dir = "/My_Results/Dataset_1_Vk_output/"
-'''
+results_dir = "My_Results/Dataset_1_VK_output/"
+
 
 #HRF
 '''data_set = "HRF"
 image_dir = "../Data/HRF_Dataset_1/Provided_masks/"
 retinal_image_folder = "../Data/HRF_Dataset_1/Provided_retinal_images/*.png"
-results_dir = "/My_Results/HRF_output/"
+results_dir = "My_Results/HRF_output/"
 '''
 
 ## all coarse
 '''data_set = "all"
 image_dir = "../Data/all/Provided_masks/"
-results_dir = "/My_Results/all_output/"
+results_dir = "My_Results/all_output/"
 '''
-
 ID, data, diag = obtain_diagnoses(data_set, results_dir, data_type = "PI")
 
 fontsize=24
