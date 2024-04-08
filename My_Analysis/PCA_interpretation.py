@@ -32,6 +32,7 @@ results_dir = "My_Results/HRF_output/"
 image_dir = "../Data/all/Provided_masks/"
 results_dir = "My_Results/all_output/"
 '''
+
 ID, data, diag = obtain_diagnoses(data_set, results_dir, data_type = "PI")
 
 fontsize=24

@@ -101,8 +101,10 @@ def obtain_diagnoses(data_set, results_dir, data_type="PI"):
         try:    
             for key in filtration_type:                      
                 file_name = (results_dir + "DS1_im" + num + "_" + key + "_PIR.npy")
-                mat = np.load(file_name,encoding="latin1",allow_pickle=True).item()
-                data[key][i,:] = np.hstack([mat['Ip'][0].reshape(-1),mat['Ip'][1].reshape(-1)])                     
+                mat = np.load(file_name,encoding="latin1",allow_pickle=True)
+                unzipped = list(zip(*mat))
+                #data[key][i,:] = np.hstack([list(unzipped[0]),list(unzipped[1])])  
+                data[key][i,:] = mat               
         except:
             no_data_exists.append(i)
 
