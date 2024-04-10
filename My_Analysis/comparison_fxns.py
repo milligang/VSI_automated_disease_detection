@@ -91,8 +91,9 @@ def cross_val_prediction(X,y):
 
 ID, data, diag = obtain_diagnoses(data_set, results_dir)
 y = 1*(np.any(diag==0,axis=1))
-# y = [0 0 0 0 0 0 1 1 1 0 1 1 1 1 1 1 1 0 0 0]
-mean, std = cross_val_prediction(bottle(data_set, image_data, False), y)
+print(y)
+X = data['pers']                   
+mean, std = cross_val_prediction(X[0], y)
 print(f"Mean: {100*np.round(mean,3)}, SD: {100*np.round(std,3)}")
 # stare Mean: 35.2 %, SD: 8.0
 # stare expert 2 Mean: 33.8%, SD: 9.4

@@ -74,7 +74,7 @@ def obtain_diagnoses(data_set, results_dir):
 
     filtration_type = ['pers']
 
-    data_format = np.array([[np.array([0., 0.]) for _ in range(2500)] for _ in range(num_images)])
+    data_format = np.array([[np.array([0., 0.]) for _ in range(300)] for _ in range(num_images)])
     data = {}
     for key in filtration_type:
         data[key] = np.copy(data_format)
@@ -90,12 +90,12 @@ def obtain_diagnoses(data_set, results_dir):
         for j,d in enumerate(diagnosis):
             diag[i,j] = d
 
-        try:    
+        try: 
             for key in filtration_type:                      
                 file_name = (results_dir + "DS1_im" + num + "_" + key + "_PIR.npy")
                 mat = np.load(file_name,encoding="latin1",allow_pickle=True) 
                 for k in range(len(mat)):
-                    data[key][i,:][k] = mat[k]  
+                    data[key][i,:][k] = mat[k]
         except:
             no_data_exists.append(i)
 

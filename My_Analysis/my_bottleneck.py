@@ -57,8 +57,10 @@ def dgms(txt_files, result_paths):
 
 def find_pca(DM_dataset):
     pca = PCA(n_components=2)
-    pca.fit(DM_dataset)
-    X = pca.transform(DM_dataset)
+    '''mean = DM_dataset.mean(axis=0)
+    DM_norm = DM_dataset - mean
+    X = pca.fit_transform(DM_norm)'''
+    X = pca.fit_transform(DM_dataset)
     return X 
 
 def find_dgms(txt_files, result_paths):
