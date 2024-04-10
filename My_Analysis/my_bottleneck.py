@@ -8,22 +8,25 @@ import numpy as np
 from matplotlib.ticker import (MultipleLocator, LogLocator, FormatStrFormatter, AutoMinorLocator)
 from sklearn.decomposition import PCA
 
-path1 = '../Data/Dataset_1/NEFI_graphs/'
+path1 = '../Data/Dataset_1/NEFI_graphs'
+set1 = "stare"
 path2 = '../Data/HRF_Dataset_1/NEFI_graphs/'
+set2 = "HRF"
 path3 = '../Data/Dataset_1/NEFI_graphs_VK/'
+set3 = "stare2"
 
 def dataset_files(dataset):
     txt_files = []
     files_order = []
     result_paths = []
-    if os.path.normpath(dataset) == '../Data/Dataset_1/NEFI_graphs':  
+    if os.path.normpath(dataset) == '../Data/Dataset_1/NEFI_graphs':
         result_dir = "Dataset_1_output"
         file_nums = [1, 2, 3, 4, 5, 44, 77, 81, 82, 139, 162, 163, 235, 236, 239, 240, 255, 291, 319, 324]
-    if os.path.normpath(dataset) == '../Data/Dataset_1/NEFI_graphs_VK':  
+    elif os.path.normpath(dataset) == '../Data/Dataset_1/NEFI_graphs_VK':  
         result_dir = "Dataset_1_VK_output"
         file_nums = [1, 2, 3, 4, 5, 44, 77, 81, 82, 139, 162, 163, 235, 236, 239, 240, 255, 291, 319, 324]
     elif os.path.normpath(dataset) == '../Data/HRF_Dataset_1/NEFI_graphs':
-        result_dir = "HRF_Dataset_1_output"
+        result_dir = "HRF_output"
         file_nums = list(range(1, 46))
     else:
         raise ValueError('Invalid Dataset') 
@@ -75,21 +78,34 @@ def find_dgms(txt_files, result_paths):
             dgms_collection = dgms(txt_files, result_paths)
             break
     return dgms_collection
-            
+
+def find_DM(set_name, dataset):
+    path = f"{'Outputs/'}{set_name}{'_DM.npy'}"
+    txt_files, files_order, result_paths = dataset_files(dataset)
+    dgms_collection = find_dgms(txt_files, result_paths) 
+    num_files = len(txt_files)
+    # read in the file if it exists and is not empty
+    if os.path.isfile(path) and os.path.getsize(path) > 0:
+        try:
+            DM_dataset = np.load(path)
+        except Exception as e:
+            print(f"Error occurred while loading the file: {e}")
+            return None
+    else:
+        DM_dataset = np.zeros((num_files, num_files))
+        for i, (data1, dgms1) in enumerate(dgms_collection.items()):
+            for j in range(i+1, len(dgms_collection)):  # Start from i+1 to avoid redundancy
+                data2, dgms2 = list(dgms_collection.items())[j]
+                if data1 != data2:
+                    dist = bottleneck(dgms1, dgms2)  # Calculate bottleneck distance
+                    DM_dataset[i,j] = dist  # Assign distance to DM_dataset[i,j]
+                    DM_dataset[j,i] = dist
+        np.save(path, DM_dataset)
+    return DM_dataset, files_order
                     
 # computes the bottleneck distance and perform PCA for list of datasets
-def bottle(dataset, graph): # graph is a bool, if true then show the graphs
-    txt_files, files_order, result_paths = dataset_files(dataset)
-    dgms_collection = find_dgms(txt_files, result_paths)
-    num_files = len(txt_files)
-    DM_dataset = np.zeros((num_files, num_files))
-    for i, (data1, dgms1) in enumerate(dgms_collection.items()):
-        for j in range(i+1, len(dgms_collection)):  # Start from i+1 to avoid redundancy
-            data2, dgms2 = list(dgms_collection.items())[j]
-            if data1 != data2:
-                dist = bottleneck(dgms1, dgms2)  # Calculate bottleneck distance
-                DM_dataset[i,j] = dist  # Assign distance to DM_dataset[i,j]
-                DM_dataset[j,i] = dist 
+def bottle(set_name, dataset, graph): # graph is a bool, if true then show the graphs
+    DM_dataset, files_order = find_DM(set_name, dataset)
     X = find_pca(DM_dataset)
     if graph:
         # graph bottleneck distance

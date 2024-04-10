@@ -15,7 +15,7 @@ results_dir = "/My_Results/Dataset_1_output/"
 '''
 
 ### Dataset_1_VK STARE Expert 2
-data_set = "stare"
+data_set = "stare2"
 image_dir = "../Data/Dataset_1/Provided_masks_VK/"
 results_dir = "My_Results/Dataset_1_VK_output/"
 
@@ -32,8 +32,7 @@ results_dir = "My_Results/HRF_output/"
 image_dir = "../Data/all/Provided_masks/"
 results_dir = "My_Results/all_output/"
 '''
-
-ID, data, diag = obtain_diagnoses(data_set, results_dir, data_type = "PI")
+ID, data, diag = obtain_diagnoses(data_set, results_dir)
 
 fontsize=24
 

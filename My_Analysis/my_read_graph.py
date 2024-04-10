@@ -51,13 +51,9 @@ def read_graph(graph_path):
     return G
 
 
-def obtain_diagnoses(data_set, results_dir, data_type="PI"):
+def obtain_diagnoses(data_set, results_dir):
     '''
     obtain the disease classifications of each VSI
-    
-    inputs:
-    
-    data_type : "PI" for persistence images
     
     outputs:
     
@@ -65,33 +61,29 @@ def obtain_diagnoses(data_set, results_dir, data_type="PI"):
         data : dictionary containing TDA descriptor vectors for each filtration for each VSI
         diag : disease classification for each VSI
     '''
-    if "stare" == data_set:
+    if "stare" == data_set or "stare2" == data_set:
         num_images = 402
         diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses.npy",allow_pickle=True,encoding="latin1").item()
-    elif data_set == "HRF":
+    elif "HRF" == data_set:
         num_images = 45
         diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses_HRF.npy",allow_pickle=True,encoding="latin1").item()
     elif "all" == data_set:
         num_images = 161
-        diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses_all.npy",allow_pickle=True,encoding="latin1").item()
-            
+        diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses_all.npy",allow_pickle=True,encoding="latin1").item()   
     ID = np.zeros((num_images,),dtype=int)
 
     filtration_type = ['pers']
-        
-    if data_type == "PI":
-        data_format = np.zeros((num_images,2*2500))
 
-        data = {}
-        for key in filtration_type:
-            data[key] = np.copy(data_format)
-
+    data_format = np.array([[np.array([0., 0.]) for _ in range(2500)] for _ in range(num_images)])
+    data = {}
+    for key in filtration_type:
+        data[key] = np.copy(data_format)
     nums = list(diagnosis_keys['image_diagnoses'])
     diag = np.zeros((num_images,4))
     diag[:] = np.nan
     no_data_exists = []
-    for i,num in enumerate(nums):
 
+    for i,num in enumerate(nums):
         ID[i] = i+1
         diagnosis = diagnosis_keys['image_diagnoses'][num]
 
@@ -101,10 +93,9 @@ def obtain_diagnoses(data_set, results_dir, data_type="PI"):
         try:    
             for key in filtration_type:                      
                 file_name = (results_dir + "DS1_im" + num + "_" + key + "_PIR.npy")
-                mat = np.load(file_name,encoding="latin1",allow_pickle=True)
-                unzipped = list(zip(*mat))
-                #data[key][i,:] = np.hstack([list(unzipped[0]),list(unzipped[1])])  
-                data[key][i,:] = mat               
+                mat = np.load(file_name,encoding="latin1",allow_pickle=True) 
+                for k in range(len(mat)):
+                    data[key][i,:][k] = mat[k]  
         except:
             no_data_exists.append(i)
 
