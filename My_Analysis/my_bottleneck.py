@@ -103,8 +103,12 @@ def find_DM(set_name, dataset):
                     DM_dataset[i,j] = dist  # Assign distance to DM_dataset[i,j]
                     DM_dataset[j,i] = dist
         np.save(path, DM_dataset)
-    return DM_dataset, files_order
-                    
+        for row in range(len(DM_dataset)):
+            num = files_order[row]
+            num_str = f"{str(num).zfill(4)}"
+            np.save('Outputs/' + set_name + '/DS1_im' + num_str + '_bottle' + '_PIR.npy', DM_dataset[row])
+    return DM_dataset, files_order   
+
 # computes the bottleneck distance and perform PCA for list of datasets
 def bottle(set_name, dataset, graph): # graph is a bool, if true then show the graphs
     DM_dataset, files_order = find_DM(set_name, dataset)
@@ -134,3 +138,4 @@ def bottle(set_name, dataset, graph): # graph is a bool, if true then show the g
         plt.show()
     else:
         return X
+    

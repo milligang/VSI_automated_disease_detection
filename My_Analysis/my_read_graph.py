@@ -72,9 +72,10 @@ def obtain_diagnoses(data_set, results_dir):
         diagnosis_keys = np.load("../Data/Diagnoses/image_diagnoses_all.npy",allow_pickle=True,encoding="latin1").item()   
     ID = np.zeros((num_images,),dtype=int)
 
-    filtration_type = ['pers']
+    filtration_type = ['bottle']
 
-    data_format = np.array([[np.array([0., 0.]) for _ in range(300)] for _ in range(num_images)])
+    #data_format = np.array([[np.array([0., 0.]) for _ in range(300)] for _ in range(num_images)])
+    data_format = np.zeros((num_images,2*num_images))
     data = {}
     for key in filtration_type:
         data[key] = np.copy(data_format)
@@ -92,20 +93,24 @@ def obtain_diagnoses(data_set, results_dir):
 
         try: 
             for key in filtration_type:                      
-                file_name = (results_dir + "DS1_im" + num + "_" + key + "_PIR.npy")
+                # file_name = (results_dir + "DS1_im" + num + "_" + key + "_PIR.npy")
+                file_name = ("Outputs/" + data_set + "/DS1_im" + num + "_" + key + "_PIR.npy")
                 mat = np.load(file_name,encoding="latin1",allow_pickle=True) 
-                for k in range(len(mat)):
-                    data[key][i,:][k] = mat[k]
+                data[key][i,:len(mat)] = mat 
+                #data[key][i] = data[key][i,:len(mat)]       
         except:
             no_data_exists.append(i)
-
     ID = np.delete(ID,no_data_exists,axis=0)
+
     for key in filtration_type:
         data[key] = np.delete(data[key],no_data_exists,axis=0)
     diag = np.delete(diag,no_data_exists,axis=0)
-
     return ID, data, diag
 
 def plot_graph(nxgraph):
     pos = nx.get_node_attributes(nxgraph, 'pos')
     return nx.draw(nxgraph, pos, with_labels = False, node_size = 10)
+
+bd_list = np.load('My_Results/Dataset_1_output/DS1_im0001_pers_PIR.npy')
+bd_tuples = [tuple(coordinate) for coordinate in bd_list]
+print(bd_tuples)

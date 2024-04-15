@@ -6,10 +6,10 @@ from sklearn import svm
 from sklearn.model_selection import cross_val_score, KFold
 
 ### Dataset_1 STARE Expert 1
-data_set = "stare"
+'''data_set = "stare"
 image_data = '../Data/Dataset_1/NEFI_graphs/'
 image_dir = "../Data/Dataset_1/Provided_masks/"
-results_dir = "My_Results/Dataset_1_output/"
+results_dir = "My_Results/Dataset_1_output/"'''
 
 ### Dataset_1_VK STARE Expert 2
 '''data_set = "stare2"
@@ -18,13 +18,13 @@ image_dir = "../Data/Dataset_1/Provided_masks_VK/"
 results_dir = "My_Results/Dataset_1_VK_output/"'''
 
 #HRF
-'''
+
 data_set = "HRF"
 image_data = '../Data/HRF_Dataset_1/NEFI_graphs/'
 image_dir = "../Data/HRF_Dataset_1/Provided_masks/"
 retinal_image_folder = "../Data/HRF_Dataset_1/Provided_retinal_images/*.png"
 results_dir = "My_Results/HRF_output/"
-'''
+
 
 ## all
 '''data_set = "all"
@@ -91,10 +91,14 @@ def cross_val_prediction(X,y):
 
 ID, data, diag = obtain_diagnoses(data_set, results_dir)
 y = 1*(np.any(diag==0,axis=1))
-print(y)
-X = data['pers']                   
-mean, std = cross_val_prediction(X[0], y)
+X = data['bottle']               
+mean, std = cross_val_prediction(X, y)
 print(f"Mean: {100*np.round(mean,3)}, SD: {100*np.round(std,3)}")
 # stare Mean: 35.2 %, SD: 8.0
 # stare expert 2 Mean: 33.8%, SD: 9.4
 # HRF Mean: 61.1%, SD: 3.4
+
+# stare bottleneck Mean: 34.3%, SD: 8.7
+# stare expert 2 bottleneck Mean: 44.0%, SD: 10.8
+# HRF bottleneck Mean: 61.7%, SD: 2.9
+
