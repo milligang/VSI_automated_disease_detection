@@ -66,6 +66,7 @@ for filtration in filtrations:
     print("")
 
 stare.plot_labelings(diag)
+
 '''
 stare1: 
     b0: 25.7, SD: 9.0
