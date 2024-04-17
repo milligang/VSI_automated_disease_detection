@@ -43,7 +43,8 @@ def read_graph(graph_path):
 
                         # Add the edge between head and tail nodes
                         edge_length = float((tail_line.split('|')[1].split(':')[2].split(',')[0]))
-                        G.add_edge(node_labels[head_node], node_labels[tail_node], length = edge_length)
+                        edge_width = float((tail_line.split('|')[1].split(':')[3].split(',')[0]))
+                        G.add_edge(node_labels[head_node], node_labels[tail_node], length = edge_length, width = (1 / edge_width))
     except FileNotFoundError:
         print(f"File not found: {graph_path}")
     except Exception as e:
@@ -110,7 +111,3 @@ def obtain_diagnoses(data_set, results_dir):
 def plot_graph(nxgraph):
     pos = nx.get_node_attributes(nxgraph, 'pos')
     return nx.draw(nxgraph, pos, with_labels = False, node_size = 10)
-
-bd_list = np.load('My_Results/Dataset_1_output/DS1_im0001_pers_PIR.npy')
-bd_tuples = [tuple(coordinate) for coordinate in bd_list]
-print(bd_tuples)

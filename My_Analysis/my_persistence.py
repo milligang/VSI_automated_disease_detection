@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from persim import plot_diagrams
 from my_read_graph import *
+from ripser import ripser
 
 # path to the data from the graph to be read in
-# graph_path = '../Data/Dataset_1/NEFI_graphs/webs_im0002_#0_11h10m58s/Graph Filtering_smooth_2_nodes_im0002.txt'
+graph_path = '../Data/Dataset_1/NEFI_graphs/webs_im0002_#0_12h03m01s/Graph Filtering_smooth_2_nodes_im0002.txt'
 # test_graph_path = 'testing_graph.txt'
-# nxgraph = read_graph(graph_path)
+nxgraph = read_graph(graph_path)
 
 # calculate the central node
 def my_central_node_ID(graph_in):
@@ -39,6 +40,28 @@ def geodesic_distance(graph_in):
     central_node = my_central_node_ID(graph_in)
     geodesic_distance = nx.single_source_dijkstra_path_length(graph_in, central_node, cutoff=None, weight='length')
     return geodesic_distance
+
+def weight_distance(graph_in):
+    all_dist = list(nx.all_pairs_dijkstra_path_length(graph_in, cutoff=None, weight='width'))
+    # output: list of tuples, each tuple is (node, dictinoary of distance to each node)
+    # Convert all_dist to a distance matrix
+    # Extract unique nodes
+    nodes = sorted(set(node for node, distances in all_dist))
+
+    # Initialize the matrix with zeros
+    all_d_matrix = [[0] * len(nodes) for _ in range(len(nodes))]
+
+    # Fill in the matrix using the distances from the data
+    for node, distances in all_dist:
+        i = nodes.index(node)
+        for dest_node, distance in distances.items():
+            j = nodes.index(dest_node)
+            all_d_matrix[i][j] = distance
+    print(np.array(all_d_matrix))
+    return ripser(np.array(all_d_matrix), maxdim=2, distance_matrix=True)['dgms']
+weight_distance(nxgraph)
+plot_diagrams(weight_distance(nxgraph))
+plt.show()
 
 # create persistence diagram
 def find_connections(n, alive_dict, graph_in):

@@ -27,6 +27,7 @@ file_name = "im"
 data_name = "DS1_"
 results_dir = "My_Results/HRF_output/"
 
+
 if data_set == "HRF":
     nums = np.arange(1,46)
 elif "stare" in data_set:
@@ -65,7 +66,9 @@ for filtration in filtrations:
     
     print("")
 
-stare.plot_labelings(diag)
+    # stare.PCA_interpretation(filtration)
+
+# stare.plot_labelings(diag)
 
 '''
 stare1: 

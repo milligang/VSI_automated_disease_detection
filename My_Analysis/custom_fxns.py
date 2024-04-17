@@ -1,10 +1,25 @@
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from scipy.stats import multivariate_normal
 from sklearn import svm
 from sklearn.decomposition import PCA
 from sklearn.model_selection import cross_val_score, KFold
+from persim import plot_diagrams
+
+from my_persistence import *
+
+
+'''
+graph data file persistence
+mat = np.load('My_Results/Dataset_1_output/DS1_im0001_pers_PIR.npy')
+def graph(mat):
+    plt.figure()
+    plot_diagrams(mat)
+    plt.title("1 persistence diagram")
+    plt.show()
+graph(mat) '''
 
 class STARE_manager:
 
@@ -86,7 +101,7 @@ class STARE_manager:
 					for key in filtration_type:                    
 						file_name = (self.results_dir + self.data_name + self.file_name + num + "_" + key +"_PIR2.npy")
 						mat = np.load(file_name,encoding="latin1",allow_pickle=True,).item()
-						data[key][i,:] = np.hstack([mat['Ip'][0].reshape(-1),mat['Ip'][1].reshape(-1)])                 
+						data[key][i,:] = np.hstack([mat['Ip'][0].reshape(-1),mat['Ip'][1].reshape(-1)])              
 			except:
 				no_data_exists.append(i)
 
@@ -154,6 +169,48 @@ class STARE_manager:
 		X_vec_PCA_all = PCA_fit(data)
 
 		return [X_vec_PCA_b0, X_vec_PCA_b1, X_vec_PCA_all]
+	
+	def PCA_interpretation(self, filtration):
+
+		ID, data, diag =  self.obtain_diagnoses(data_type="PI")
+
+		fontsize=24
+
+		X = data[filtration][:,2500:]
+
+		y = 1*(np.any(diag==0,axis=1))
+
+		pca = PCA(n_components=2)
+
+		mean = X.mean(axis=0)
+		X_norm = X - mean
+
+		X_pca = pca.fit_transform(X_norm) 
+
+		mpl.rc("xtick",labelsize=15)
+		mpl.rc("ytick",labelsize=15)
+		#mpl.rcParams['font.family'] = 'serif'
+		#mpl.rcParams['font.serif'] = ['Times New Roman'] + mpl.rcParams['font.serif']
+
+			
+		fig = plt.figure(figsize=(8,6))
+		ax = fig.add_subplot(111)
+
+		ax.scatter(X_pca[y==0,0],X_pca[y==0,1],c="r",label="Diseased")
+		ax.scatter(X_pca[y==1,0],X_pca[y==1,1],c="b",label="Normal")
+
+		#for j, txt in enumerate(ID):
+		#    ax.annotate(txt, (X_pca[j,0], X_pca[j,1]))
+
+		#plt.legend(loc=2,fontsize=fontsize)
+
+		ax.set_xlabel("PCA component 1",fontsize=fontsize)
+		ax.set_ylabel("PCA component 2",fontsize=fontsize)
+		ax.set_title("Flooding (loops) PCA space",fontsize=fontsize)
+
+		ax.set_xticks([])
+		ax.set_yticks([])
+		plt.show()
     
 def cross_val_prediction(X,y):
     
@@ -349,4 +406,3 @@ def save_BD(diag,filename):
 	data = {}
 	data['BD'] = diag
 	np.save(filename,data)
-
